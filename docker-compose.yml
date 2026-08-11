@@ -1,0 +1,73 @@
+services:
+  chai_analysis_postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: chai_analysis
+      POSTGRES_USER: chai_analysis
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-Vasanth13}
+    ports:
+      - "5433:5432"
+    volumes:
+      - chai_analysis_postgres_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chai_analysis -d chai_analysis"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  chai_analysis_redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD:-Vasanth13} --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - chai_analysis_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-Vasanth13}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  chai_analysis_backend:
+    build:
+      context: ./backend
+      target: production
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://chai_analysis:${POSTGRES_PASSWORD:-Vasanth13}@chai_analysis_postgres:5432/chai_analysis
+      REDIS_URL: redis://:${REDIS_PASSWORD:-Vasanth13}@chai_analysis_redis:6379/0
+    ports:
+      - "8000:8000"
+    depends_on:
+      chai_analysis_postgres:
+        condition: service_healthy
+      chai_analysis_redis:
+        condition: service_healthy
+    volumes:
+      - chai_analysis_uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  chai_analysis_frontend:
+    build:
+      context: ./frontend
+      target: production
+    restart: unless-stopped
+    ports:
+      - "4000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    depends_on:
+      - chai_analysis_backend
+
+volumes:
+  chai_analysis_postgres_data:
+  chai_analysis_redis_data:
+  chai_analysis_uploads:

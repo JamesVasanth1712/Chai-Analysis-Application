@@ -1,0 +1,35 @@
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+pydantic[email]==2.10.3
+pydantic-settings==2.6.1
+python-multipart==0.0.17
+python-jose[cryptography]==3.3.0
+bcrypt==4.2.1
+httpx==0.28.1
+
+sqlalchemy==2.0.36
+alembic==1.14.0
+asyncpg==0.30.0
+redis==5.2.1
+hiredis==3.1.0
+
+openai>=1.58.1
+pandas==2.2.3
+openpyxl==3.1.5
+xlrd==2.0.1
+pyarrow==16.1.0
+
+
+python-dotenv==1.0.1
+orjson==3.10.12
+structlog==24.4.0
+prometheus-client==0.21.1
+
+# Document exports
+python-docx==1.1.2
+python-pptx==1.0.2
+
+# ML & forecasting dependencies
+scikit-learn==1.6.0
+statsmodels==0.14.4
+scipy==1.15.0

@@ -1,0 +1,47 @@
+# Environment - NEVER commit
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+.venv/
+venv/
+env/
+*.egg-info/
+dist/
+.pytest_cache/
+
+# Node
+node_modules/
+.next/
+.turbo/
+out/
+build/
+
+# Docker volumes
+postgres_data/
+redis_data/
+qdrant_data/
+
+# Uploads
+uploads/
+*.pdf
+*.html
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
