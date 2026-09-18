@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+
   pull_request:
     branches:
       - main
@@ -42,6 +43,10 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         run: npm run build
+
+      - name: Prepare Environment
+        run: |
+          cp .env.example .env
 
       - name: Validate Docker Compose
         run: docker compose config
